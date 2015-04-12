@@ -34,7 +34,7 @@ class BrowscapCommand(StreamingCommand):
             for key, value in match.iteritems():
 
                 # Save the value from the match onto the record
-                record["UA_" + key] = value
+                record["UA" + key] = value
 
             # Yield the record
             yield record
