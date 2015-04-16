@@ -5,7 +5,7 @@ import sys
 import csv
 import os
 import socket
-import netaddr
+import SubnetTree
 
 # Search commands
 from splunklib.searchcommands import dispatch, StreamingCommand, Configuration, Option, validators
@@ -18,26 +18,14 @@ class ASNameCommand(StreamingCommand):
 
 	# Stream results as needed
 	def stream(self, records):
-		self.logger.warn("setup")
 
 		# As a record is passed in
 		for record in records:
-			self.logger.warn(str(record))
 
-			# Get the IP address
-			ip = netaddr.IPAddress(record[self.field])
-
-			# Loop the entire cache, break when a ip is found
-			found = None
-			for i, net in enumerate(self.nets):
-				if ip in net:
-					found = self.asns[i]
-					break
-
-			# If we didn't find one, we need to look it up
-			if found == None:
-
-				# If we don't have a socket yet, make one and connect
+			# If the IP is not in the CIDR tree
+			if record[self.field] not in self.tree:
+				
+				# If we don't have a socket yet
 				if self.s == None:
 
 					# Create a new socket
@@ -67,22 +55,21 @@ class ASNameCommand(StreamingCommand):
 				self.s.send(record[self.field] + "\n")
 
 				# Get the response from the socket
-				found = next(self.r)
-				self.logger.warn(str(found))
+				result = next(self.r)
+				
+				# Clean it up
+				prefix = result["ASPrefix"]
+				del result["ASPrefix"]
+				del result[self.field]
 
-				# Store the prefix in the cache
-				self.nets.append(netaddr.IPNetwork(found["ASPrefix"]))
-				self.asns.append(found)
-
-			self.logger.warn(str(asn))
-
-			record["AS"] = self.asns[i]["AS"]
+				# Store the prefix in the tree
+				self.tree[prefix] = result
+				
+			# Update the record with the values form the tree
+			record.update(self.tree[record[self.field]])
 
 			# Yield the record
 			yield record
-
-		# Cleanup
-		self.logger.warn("done")
 
 	# Override the constructor
 	def __init__(self):
@@ -90,9 +77,8 @@ class ASNameCommand(StreamingCommand):
 		# Call the original
 		super(StreamingCommand, self).__init__()
 
-		# Cache holds all known networks
-		self.nets = []
-		self.asns = []
+		# Cache holds the tree of data
+		self.tree = SubnetTree.SubnetTree()
 
 		# Hold the socket connection as needed
 		self.s = None
