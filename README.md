@@ -1,2 +1,2 @@
 # bf-splunk
-A simple Splunk application to assist in parsing and analysis of Project Bitfl1p logs
+The Splunk application behind Project Bitfl1p
