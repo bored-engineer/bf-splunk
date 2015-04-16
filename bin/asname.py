@@ -7,6 +7,7 @@ import os
 import socket
 import SubnetTree
 import pickle
+import os.path
 
 # Search commands
 from splunklib.searchcommands import dispatch, StreamingCommand, Configuration, Option, validators
@@ -74,20 +75,28 @@ class ASNameCommand(StreamingCommand):
 			yield record
 		
 		# Write to the cache file
-		with open("cidr_build", 'w') as cache:
-			pickle.dump(cache, {p: self.tree[p] for p in self.prefixes})
+		with open("cidr_build.dat", 'w') as cache:
+			pickle.dump({p: self.tree[p] for p in self.prefixes}, cache)
 
 	# Override the constructor
 	def __init__(self):
 
 		# Call the original
 		super(StreamingCommand, self).__init__()
-
+		
 		# Prefixes lists all known prefixs since subnet tree can't be pickled
 		self.prefixes = set()
 
 		# Tree holds the cidr ranges
 		self.tree = SubnetTree.SubnetTree()
+
+		# Read in from cache if it exists
+		if os.path.isfile("cidr_build.dat"):
+			with open("cidr_build.dat", 'r') as cache:
+				treeDict = pickle.load(cache)
+				self.prefixes = set(treeDict.keys())
+				for p in self.prefixes:
+					self.tree[p] = treeDict[p]
 
 		# Hold the socket connection as needed
 		self.s = None
