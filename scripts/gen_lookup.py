@@ -55,7 +55,7 @@ for line in sys.stdin:
 		result = { k:v.strip() for k, v in result.iteritems() }
 
 		# Catch and ignore bad prefixs
-		try: 		
+		try:
 
 			# Save the prefix in tree so we don't look it up twice for other IPs in the range
 			tree[result["ASPrefix"]] = True
@@ -63,6 +63,6 @@ for line in sys.stdin:
 			# Print the prefix to stdout
 			w.writerow(result)
 
-		# Ignore the error
+		# Print the error to stderr
 		except:
-			pass
+			sys.stderr.write("Unexpected error: " + str(sys.exc_info()[0]))
