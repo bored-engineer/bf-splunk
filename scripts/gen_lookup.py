@@ -54,8 +54,15 @@ for line in sys.stdin:
 		# Strip all the values since they come with whitespace
 		result = { k:v.strip() for k, v in result.iteritems() }
 
-		# Save the prefix in tree so we don't look it up twice for other IPs in the range
-		tree[result["ASPrefix"]] = True
+		# Catch and ignore bad prefixs
+		try: 		
 
-		# Print the prefix to stdout
-		w.writerow(result)
+			# Save the prefix in tree so we don't look it up twice for other IPs in the range
+			tree[result["ASPrefix"]] = True
+
+			# Print the prefix to stdout
+			w.writerow(result)
+
+		# Ignore the error
+		except:
+			pass
