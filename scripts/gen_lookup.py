@@ -40,6 +40,7 @@ for result in r:
 
 	# Strip all the values since they come with whitespace
 	result = { k:v.strip() for k, v in result.iteritems() }
+	print result
 
 	# Save the prefix in tree so we don't look it up twice for other IPs in the range
 	tree[result["ASPrefix"]] = True
@@ -51,9 +52,19 @@ for result in r:
 	w.writerow(result)
 
 	# Keep reading IPs until we hit another new one
-	ip = sys.stdin.readline().strip()
-	while ip in tree:
+	while True:
+
+		# Read in IP
 		ip = sys.stdin.readline().strip()
 
-	# Send a request for it
-	s.send(ip + "\n")
+		# If new IP
+		if ip not in tree:
+
+			# Send a request for it
+			s.send(ip + "\n")
+			print ip
+
+			# Stop looping
+			break
+
+	
