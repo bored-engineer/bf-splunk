@@ -15,8 +15,8 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Connect to Team Cymru (https://www.team-cymru.org/IP-ASN-mapping.html)
 s.connect(("whois.cymru.com", 43))
 
-# Send the header
-s.send("begin\nverbose\n")
+# Send the header and the first IP
+s.send("begin\nverbose\n" + sys.stdin.readline().strip() + "\n")
 
 # Make s into a file for ease of use
 f = s.makefile()
@@ -28,41 +28,32 @@ f.readline()
 r = csv.DictReader(f,
 	delimiter='|',
 	quoting=csv.QUOTE_NONE,
-	skipinitialspace=True,
-	fieldnames=["AS", "Ignore", "ASPrefix", "ASCountry", "ASRegistry", "ASAllocDate", "ASName"]
+	fieldnames=["AS", "IP", "ASPrefix", "ASCountry", "ASRegistry", "ASAllocDate", "ASName"]
 )
 
 # Setup a csv writer to stdout
 w = csv.DictWriter(sys.stdout, fieldnames=["ASPrefix", "AS", "ASCountry", "ASRegistry", "ASAllocDate", "ASName"])
 w.writeheader()
 
-# For each IP
-for line in sys.stdin:
+# For each value from cymru
+for result in r:
 
-	# Check if not already looked up in tree
-	if line.strip() not in tree:
+	# Strip all the values since they come with whitespace
+	result = { k:v.strip() for k, v in result.iteritems() }
 
-		# Look it up
-		s.send(line.strip() + "\n")
+	# Save the prefix in tree so we don't look it up twice for other IPs in the range
+	tree[result["ASPrefix"]] = True
 
-		# Get the response from the socket
-		result = next(r)
+	# Delete the IP
+	del result["IP"]
 
-		# Delete
-		del result["Ignore"]
+	# Print the prefix to stdout
+	w.writerow(result)
 
-		# Strip all the values since they come with whitespace
-		result = { k:v.strip() for k, v in result.iteritems() }
+	# Keep reading IPs until we hit another new one
+	ip = sys.stdin.readline().strip()
+	while ip in tree:
+		ip = sys.stdin.readline().strip()
 
-		# Catch and ignore bad prefixs
-		try:
-
-			# Save the prefix in tree so we don't look it up twice for other IPs in the range
-			tree[result["ASPrefix"]] = True
-
-			# Print the prefix to stdout
-			w.writerow(result)
-
-		# Print the error to stderr
-		except:
-			sys.stderr.write("Unexpected error: " + str(sys.exc_info()[0]))
+	# Send a request for it
+	s.send(ip + "\n")
