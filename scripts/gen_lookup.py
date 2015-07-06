@@ -43,7 +43,7 @@ for line in sys.stdin:
 	if line.strip() not in tree:
 
 		# Look it up
-		s.send(line + "\n")
+		s.send(line.strip() + "\n")
 
 		# Get the response from the socket
 		result = next(r)
