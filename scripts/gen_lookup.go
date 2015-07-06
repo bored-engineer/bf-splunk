@@ -110,7 +110,7 @@ func main() {
 			// Parse the response CIDR range
 			_, cidr, err := net.ParseCIDR(result[2])
 			if err != nil {
-				panic(err)
+				continue
 			}
 
 			// Make the ip list
