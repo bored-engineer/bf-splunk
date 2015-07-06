@@ -1,3 +1,4 @@
 bin/splunklib/
 bf-splunk.log
 .DS_Store
+lookups/bf_asn.csv
