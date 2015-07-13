@@ -63,7 +63,7 @@ class BitCommand(ReportingCommand):
 		for qNameUnflipped, bits in flips.iteritems():
 
 			# Loop each bit for the qNameUnflipped
-			for i, count in bits:
+			for i, count in enumerate(bits):
 
 				# Yield a record
 				yield { qNameUnflipped: qNameUnflipped, bit: i, count: count/probs[qNameUnflipped][i] }
