@@ -60,7 +60,7 @@ class BitCommand(ReportingCommand):
 			flips[record["qNameUnflipped"]][findBit(record["qNameUnflipped"], record["domain"])] += int(record["count"])
 
 		# Loop each flips for the reporting
-		for qNameUnflipped, bits in flips:
+		for qNameUnflipped, bits in flips.iteritems():
 
 			# Loop each bit for the qNameUnflipped
 			for i, count in bits:
