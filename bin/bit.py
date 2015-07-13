@@ -66,7 +66,7 @@ class BitCommand(ReportingCommand):
 			for i, count in enumerate(bits):
 
 				# Yield a record
-				yield { qNameUnflipped: qNameUnflipped, bit: i, count: count/probs[qNameUnflipped][i] }
+				yield { "qNameUnflipped": qNameUnflipped, "bit": i, "count": count/probs[qNameUnflipped][i] }
 
 # Tell splunk we exist
 dispatch(BitCommand, sys.argv, sys.stdin, sys.stdout, __name__)
