@@ -62,11 +62,23 @@ class BitCommand(ReportingCommand):
 		# Loop each flips for the reporting
 		for qNameUnflipped, bits in flips.iteritems():
 
+			# Sum the total posibilities
+			totalPossibilities = sum(bits)
+
 			# Loop each bit for the qNameUnflipped
 			for i, count in enumerate(bits):
 
+				# Set probability to the given number of options
+				probability = probs[qNameUnflipped][i]
+
+				# Scale appropriately
+				if totalPossibilities == 0:
+					probability = 0
+				else:
+					probability /= totalPossibilities
+
 				# Yield a record
-				yield { "qNameUnflipped": qNameUnflipped, "bit": i, "count": count, "probability": probs[qNameUnflipped][i]/sum(bits) }
+				yield { "qNameUnflipped": qNameUnflipped, "bit": i, "count": count, "probability": probability }
 
 # Tell splunk we exist
 dispatch(BitCommand, sys.argv, sys.stdin, sys.stdout, __name__)
