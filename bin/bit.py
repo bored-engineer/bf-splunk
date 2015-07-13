@@ -23,13 +23,8 @@ def findBit(str1, str2):
 	# Return not found
 	return -1  
 
-@Configuration(clear_required_fields=True, requires_preop=True)
+@Configuration()
 class BitCommand(ReportingCommand):
-
-	# Multiple options
-	qNameUnflipped = Option(doc='', require=True, validate=validators.Fieldname())
-	bit = Option(doc='', require=True, validate=validators.Fieldname())
-	count = Option(doc='', require=True, validate=validators.Fieldname())
 
 	# Reduce the results to a nice result set
 	def reduce(self, records):
@@ -62,7 +57,7 @@ class BitCommand(ReportingCommand):
 		for record in records:
 
 			# Identify which bit the flip occured in and increment that count for the given qNameUnflipped
-			flips[record[self.qNameUnflipped]][findBit(record[self.qNameUnflipped, record[self.bit])] += int(record[self.count])
+			flips[record["qNameUnflipped"]][findBit(record["qNameUnflipped"], record["domain"])] += int(record["count"])
 
 		# Loop each flips for the reporting
 		for qNameUnflipped, bits in flips:
@@ -71,7 +66,7 @@ class BitCommand(ReportingCommand):
 			for i, count in bits:
 
 				# Yield a record
-				yield { self.qNameUnflipped: qNameUnflipped, self.bit: i, self.count: count/probs[qNameUnflipped][i] }
+				yield { qNameUnflipped: qNameUnflipped, bit: i, count: count/probs[qNameUnflipped][i] }
 
 # Tell splunk we exist
 dispatch(BitCommand, sys.argv, sys.stdin, sys.stdout, __name__)
