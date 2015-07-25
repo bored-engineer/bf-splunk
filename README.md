@@ -15,3 +15,9 @@ git clone git@github.com:innoying/bf-splunk.git $SPLUNK_HOME/etc/apps/bf-splunk
 $SPLUNK_HOME/bin/splunk restart
 ```
 * In the Splunk web interface, from the App menu, select the "Project Bitfl1p" application.
+
+## Queries
+Determine type of flip resulting in a connection most commonly
+```
+index = "bf_www" httpHost != "*.bitfl1p.com" | top dst
+```
