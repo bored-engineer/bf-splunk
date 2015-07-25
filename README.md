@@ -16,7 +16,7 @@ $SPLUNK_HOME/bin/splunk restart
 ```
 * Optionally install the Splunk_TA_Bro application for bro logs, you may have to patch the BroAutoType in `transforms.conf` to:
 ```
-REGEX = (?:[a-zA-Z0-9]+\.)?([a-zA-Z0-9]+)\.log\.gz
+REGEX = ([a-zA-Z0-9]+)\.[0-9:]+-.[0-9:]+\.log
 ```
 * In the Splunk web interface, from the App menu, select the "Project Bitfl1p" application.
 
