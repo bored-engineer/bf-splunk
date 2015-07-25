@@ -23,5 +23,5 @@ REGEX = ([a-zA-Z0-9]+)\.[0-9:]+-.[0-9:]+\.log
 ## Queries
 Determine type of flip resulting in a connection most commonly
 ```
-index = "bf_www" httpHost != "*.bitfl1p.com" | top dst
+index = "bro" AND sourcetype="bro_http" AND extracted_host != "*.bitfl1p.com" | top dest
 ```
