@@ -14,6 +14,10 @@ git clone git@github.com:innoying/bf-splunk.git $SPLUNK_HOME/etc/apps/bf-splunk
 ```shell
 $SPLUNK_HOME/bin/splunk restart
 ```
+* Optionally install the Splunk_TA_Bro application for bro logs, you may have to patch the BroAutoType in `transforms.conf` to:
+```
+REGEX = (?:[a-zA-Z0-9]+\.)?([a-zA-Z0-9]+)\.log\.gz
+```
 * In the Splunk web interface, from the App menu, select the "Project Bitfl1p" application.
 
 ## Queries
