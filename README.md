@@ -30,3 +30,7 @@ server-bag requests
 ```
 index = "bf_www" AND (httpHost = "*applg.com" OR httpHost = "*apple.com") AND userAgent = "server-bag *" | top src
 ```
+Transaction localIP
+```
+(index="bf_www" httpHost="www.bitfl1p.com" url="POST /localIP.api *") OR (index = "bf_api" AND sourcetype = "bf_api_localip") | transaction maxspan=1m _time | search ASName != "NONE" | top limit=100 ASName, localIP
+```
